@@ -2,8 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: polybot
+  labels:
+    app: polybot
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: polybot
@@ -14,16 +16,30 @@ spec:
     spec:
       containers:
       - name: polybot
-        image: polybot:latest
+        image: your-docker-registry/polybot:latest
         ports:
         - containerPort: 8443
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: secret_access_key
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: yolo5
+  labels:
+    app: yolo5
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: yolo5
@@ -34,4 +50,17 @@ spec:
     spec:
       containers:
       - name: yolo5
-        image: yolo5:latest
+        image: your-docker-registry/yolo5:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: secret_access_key

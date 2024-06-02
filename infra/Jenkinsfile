@@ -1,32 +1,47 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        AWS_CREDENTIALS_ID = 'aws-credentials'
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig'
+        DOCKER_REGISTRY = 'your-docker-registry'
+    }
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                script {
-                    sh 'docker build -t frontend ./frontend'
-                    sh 'docker build -t background ./background'
+                checkout scm
+            }
+        }
+        stage('Build and Push Docker Images') {
+            parallel {
+                stage('Build and Push Polybot') {
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
+                                def polybotImage = docker.build("${DOCKER_REGISTRY}/polybot:latest", 'polybot/')
+                                polybotImage.push()
+                            }
+                        }
+                    }
+                }
+                stage('Build and Push YOLO5') {
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
+                                def yolo5Image = docker.build("${DOCKER_REGISTRY}/yolo5:latest", 'yolo5/')
+                                yolo5Image.push()
+                            }
+                        }
+                    }
                 }
             }
         }
-        stage('Test') {
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Add testing commands
-                }
-            }
-        }
-        stage('Deploy to Dev') {
-            steps {
-                script {
-                    // Add deployment commands
-                }
-            }
-        }
-        stage('Deploy to Prod') {
-            steps {
-                script {
-                    // Add production deployment commands
+                    withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIALS_ID}", variable: 'KUBECONFIG')]) {
+                        sh 'kubectl apply -f infra/k8s/'
+                    }
                 }
             }
         }

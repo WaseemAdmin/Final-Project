@@ -17,5 +17,8 @@ COPY . .
 COPY private.pem .
 COPY YOURPUBLIC.pem .
 
+# Expose the port
+EXPOSE 8443
+
 # Command to run the application
 CMD ["python", "app.py"]

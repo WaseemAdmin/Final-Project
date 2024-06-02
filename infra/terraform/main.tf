@@ -1,5 +1,9 @@
 provider "aws" {
-  region = "us-west-2"
+  region = "eu-west-3"
+}
+
+resource "aws_s3_bucket" "photo_bucket" {
+  bucket = "waseembucketinstancevarginia"
 }
 
 module "eks" {
@@ -7,17 +11,15 @@ module "eks" {
   cluster_name    = "microservices-cluster"
   cluster_version = "1.21"
   subnets         = ["subnet-12345", "subnet-67890"]
-  vpc_id          = "vpc-abcdef"
-}
+  vpc_id          = "vpc-12345"
 
-resource "aws_db_instance" "default" {
-  allocated_storage    = 20
-  db_subnet_group_name = "my-subnet-group"
-  engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t2.micro"
-  name                 = "mydb"
-  username             = "foo"
-  password             = "bar"
-  parameter_group_name = "default.mysql8.0"
+  node_groups = {
+    eks_nodes = {
+      desired_capacity = 2
+      max_capacity     = 3
+      min_capacity     = 1
+
+      instance_type = "t3.medium"
+    }
+  }
 }

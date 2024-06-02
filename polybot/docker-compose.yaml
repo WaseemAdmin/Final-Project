@@ -1,8 +1,0 @@
-version: '2.6'
-
-services:
-  polybot:
-    image: danielmak1/polybotdaniel:latest
-    container_name: polybot
-    ports:
-      - "8443:8443"
