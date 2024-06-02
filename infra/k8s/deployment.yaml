@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polybot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: polybot
+  template:
+    metadata:
+      labels:
+        app: polybot
+    spec:
+      containers:
+      - name: polybot
+        image: polybot:latest
+        ports:
+        - containerPort: 8443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo5
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: yolo5
+  template:
+    metadata:
+      labels:
+        app: yolo5
+    spec:
+      containers:
+      - name: yolo5
+        image: yolo5:latest

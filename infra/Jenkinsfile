@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    sh 'docker build -t frontend ./frontend'
+                    sh 'docker build -t background ./background'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    // Add testing commands
+                }
+            }
+        }
+        stage('Deploy to Dev') {
+            steps {
+                script {
+                    // Add deployment commands
+                }
+            }
+        }
+        stage('Deploy to Prod') {
+            steps {
+                script {
+                    // Add production deployment commands
+                }
+            }
+        }
+    }
+}
